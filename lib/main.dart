@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:genius_api/genius_api.dart';
 import 'package:genius_wallet/banaxa/banaxa_api_services.dart';
+import 'package:genius_wallet/banaxa/deep_link_service.dart';
 import 'package:genius_wallet/banxa_order/banxa_order_cubit.dart';
 import 'package:genius_wallet/banxa_order/create_order_cubit.dart';
 import 'package:genius_wallet/bloc/app_bloc.dart';
@@ -76,6 +77,7 @@ void main() async {
           //),
         )),
   );
+  DeepLinkService().startListening(navigatorKey);
 }
 
 class MyWindowListener extends WindowListener {
@@ -154,16 +156,13 @@ class MyApp extends StatelessWidget {
       child: MultiBlocProvider(
         providers: [
           BlocProvider<TransactionsCubit>(
-            create: (_) => TransactionsCubit(), 
+            create: (_) => TransactionsCubit(),
           ),
           BlocProvider<OrdersCubit>(
             create: (_) => OrdersCubit(),
           ),
-           BlocProvider<MakeOrderCubit>(
-            create: (_) => MakeOrderCubit(BanxaApiService())
-          ),
-          
-          
+          BlocProvider<MakeOrderCubit>(
+              create: (_) => MakeOrderCubit(BanxaApiService())),
           BlocProvider(
               create: (_) => WalletDetailsCubit(
                     geniusApi: context.read<GeniusApi>(),
