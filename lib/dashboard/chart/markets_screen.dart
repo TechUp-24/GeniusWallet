@@ -162,7 +162,7 @@ class MarketsScreen extends StatelessWidget {
                     "securityInfo": "Coming Soon",
                     "transactionHistory": ["Coming Soon"],
                     "marketData": data,
-                    "coin": coin, // Make sure coin is passed
+                    "coin": coin, 
                   },
                 );
               },

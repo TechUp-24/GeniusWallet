@@ -24,7 +24,7 @@ class OrderDetailsPage extends StatefulWidget {
 }
 
 class _OrderDetailsPageState extends State<OrderDetailsPage> {
-  late Future<OrderResponseModel> _orderFuture;
+  late Future<Order> _orderFuture;
   final _service = BanxaApiService();
   bool _showFullWallet = false;
 
@@ -62,12 +62,12 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     return '${wallet.substring(0, 6)}...${wallet.substring(wallet.length - 4)}';
   }
 
-  String? _effectiveCheckoutUrl(OrderResponseModel o) {
+  String? _effectiveCheckoutUrl(Order o) {
     if ((widget.checkoutUrl ?? '').isNotEmpty) return widget.checkoutUrl;
     return o.orderStatusUrl.isNotEmpty ? o.orderStatusUrl : null;
   }
 
-  Widget _buildActionButton(BuildContext context, OrderResponseModel o) {
+  Widget _buildActionButton(BuildContext context, Order o) {
     final status = o.status.toLowerCase();
     final checkout = _effectiveCheckoutUrl(o);
     final orderId = (o.id.isNotEmpty ? o.id : widget.orderId);
@@ -128,7 +128,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                 },
               ),
       ),
-      body: FutureBuilder<OrderResponseModel>(
+      body: FutureBuilder<Order>(
         future: _orderFuture,
         builder: (c, snap) {
           if (snap.connectionState != ConnectionState.done) {
@@ -202,11 +202,6 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                     ],
                   ),
                 ),
-                if (o.transactionHash != null && o.transactionHash!.isNotEmpty)
-                  ListTile(
-                    title: const Text('Transaction Hash'),
-                    subtitle: Text(o.transactionHash!),
-                  ),
                 ListTile(
                   title: const Text('Created At'),
                   trailing: Text(

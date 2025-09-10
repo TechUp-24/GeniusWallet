@@ -112,6 +112,13 @@ class _ReownConnectButtonState extends State<ReownConnectButton> {
 
         if (approved == null || !approved) {
           debugPrint("❌ Connection request rejected by user");
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("DApp connection was rejected."),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+
           await walletKit.rejectSession(
             id: event.id,
             reason: Errors.getSdkError(Errors.USER_REJECTED).toSignError(),
@@ -244,58 +251,119 @@ class _ReownConnectButtonState extends State<ReownConnectButton> {
                       setInnerState(() => showManualInput = !showManualInput);
                     },
                     style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 4),
-                        backgroundColor: Colors.transparent),
-                    child: Text(
-                      style: const TextStyle(color: GeniusWalletColors.gray500),
-                      showManualInput ? "Show QR Code" : "Enter URI Manually",
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 4),
+                      backgroundColor: Colors.transparent,
+                      // keep minimum size / overlay default
                     ),
-                  )
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.link, // choose any icon you prefer
+                          size: 18,
+                          color: GeniusWalletColors.lightGreenPrimary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          showManualInput
+                              ? "Show QR Code"
+                              : "Enter URI Manually",
+                          style: const TextStyle(
+                            color: GeniusWalletColors.gray500,
+                            // underline with app primary color
+                            decoration: TextDecoration.underline,
+                            decorationColor:
+                                GeniusWalletColors.lightGreenPrimary,
+                            decorationThickness: 2.0,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
             actions: [
               if (showManualInput)
-                TextButton(
-                  onPressed: () async {
-                    final input = _uriController.text.trim();
 
-                    if (!input.startsWith('wc:') || !input.contains('@')) {
-                      setInnerState(() {
-                        manualInputError =
-                            '❌ Invalid WalletConnect URI format.';
-                      });
-                      debugPrint('❌ Invalid format: $input');
-                      return;
-                    }
+                /// --- CONNECT (primary filled button) ---
+                SizedBox(
+                  width: double.infinity, // full width
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      final input = _uriController.text.trim();
 
-                    try {
-                      await walletKit.pair(uri: Uri.parse(input));
-                      Navigator.of(context).pop(); // Only close if successful
-                    } catch (e) {
-                      setInnerState(() {
-                        manualInputError = '❌ URI Connect Failed: $e';
-                      });
-                      debugPrint('❌ WalletKit pair failed: $e');
-                    }
-                  },
-                  style: TextButton.styleFrom(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      if (!input.startsWith('wc:') || !input.contains('@')) {
+                        setInnerState(() {
+                          manualInputError =
+                              '❌ Invalid WalletConnect URI format.';
+                        });
+                        debugPrint('❌ Invalid format: $input');
+                        return;
+                      }
+
+                      try {
+                        await walletKit.pair(uri: Uri.parse(input));
+                        Navigator.of(context).pop(); // Only close if successful
+                      } catch (e) {
+                        setInnerState(() {
+                          manualInputError = '❌ URI Connect Failed: $e';
+                        });
+                        debugPrint('❌ WalletKit pair failed: $e');
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          GeniusWalletColors.lightGreenPrimary, // green fill
+                      foregroundColor: Colors.white, // text/icon color
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(12), // rounded edges
+                      ),
+                      elevation: 2, // subtle shadow
+                    ),
+                    child: const Text(
+                      "Connect",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                  child: const Text("Connect"),
                 ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  setState(() => _isConnecting = false);
-                },
-                style: TextButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              const SizedBox(
+                height: 8,
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    setState(() => _isConnecting = false);
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(
+                      color: GeniusWalletColors.lightGreenPrimary,
+                      width: 1.6,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(12), // rounded corners
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    backgroundColor: Colors.transparent,
+                  ),
+                  child: const Text(
+                    "Cancel",
+                    style: TextStyle(
+                      color: GeniusWalletColors.lightGreenPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
-                child: const Text("Cancel"),
               ),
             ],
           ),
@@ -319,6 +387,14 @@ class _ReownConnectButtonState extends State<ReownConnectButton> {
             _statusMessage = "⏱ Connection timed out. Please try again.";
           });
           debugPrint('⏱ Timeout hit – no session received.');
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Wallet connection failed. Please try again."),
+                backgroundColor: Colors.redAccent,
+              ),
+            );
+          }
         }
       });
 

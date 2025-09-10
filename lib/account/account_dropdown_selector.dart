@@ -41,9 +41,6 @@ class _AccountDropdownSelectorState extends State<AccountDropdownSelector> {
   void _loadSavedWallet() async {
     final box = Hive.box(walletBoxName);
     final address = box.get(selectedWalletKey);
-
-    //print("Saved wallet address: $address");
-
     if (!mounted) return;
     setState(() {
       savedWalletAddress = address;
@@ -52,44 +49,89 @@ class _AccountDropdownSelectorState extends State<AccountDropdownSelector> {
 
   void _showAccountDrawer(List<Wallet> wallets) async {
     final walletCubit = context.read<WalletDetailsCubit>();
+    final List<Widget> walletRows = [];
+    for (int i = 0; i < wallets.length; i++) {
+      walletRows.add(_buildDrawerRow(
+        wallets[i],
+        wallets[i].walletName == selectedWallet?.walletName,
+        context,
+      ));
+      if (i < wallets.length - 1) {
+        walletRows.add(const Divider(height: 1, color: Colors.white12));
+      }
+    }
+
+    if (wallets.length < 3) {
+      walletRows.add(const Padding(
+        padding: EdgeInsets.symmetric(vertical: 16),
+        child: Center(
+          child: Text(
+            "Add more wallets to manage your assets",
+            style: TextStyle(
+                fontSize: 15,
+                color: Colors.white54,
+                fontStyle: FontStyle.italic),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ));
+    }
+
     final selected = await ResponsiveDrawer.show<Wallet>(
-        context: context,
-        title: "Your Accounts",
-        children: wallets.map((wallet) {
-          final isSelected = wallet.walletName == selectedWallet?.walletName;
-          return _buildDrawerRow(wallet, isSelected, context);
-        }).toList(),
-        footer: SizedBox(
-          width: double.infinity,
-          child: OutlinedButton(
-            onPressed: () {
-              context.push('/landing_screen', extra: true);
-            },
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              side: const BorderSide(color: Colors.transparent),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+      context: context,
+      title: "Your Accounts",
+      children: walletRows,
+      footer: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () {
+            context.push('/landing_screen', extra: true);
+          },
+          style: ElevatedButton.styleFrom(
+            elevation: 0,
+            minimumSize: const Size.fromHeight(48),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            padding: EdgeInsets.zero,
+            backgroundColor: Colors.transparent,
+            foregroundColor: GeniusWalletColors.deepBlueTertiary,
+            shadowColor: Colors.transparent,
+          ),
+          child: Ink(
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  GeniusWalletColors.lightGreenPrimary,
+                  GeniusWalletColors.btnGradientGreen
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
               ),
-              backgroundColor: Colors.greenAccent,
-              foregroundColor: GeniusWalletColors.deepBlueTertiary,
+              borderRadius: BorderRadius.circular(14),
             ),
-            child: const Text(
-              "Add Wallet",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            child: Container(
+              alignment: Alignment.center,
+              height: 48,
+              child: const Text(
+                "Add Wallet",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black, // always black
+                ),
+              ),
             ),
           ),
-        ));
+        ),
+      ),
+    );
 
     if (selected != null && selected != selectedWallet) {
       setState(() => selectedWallet = selected);
       if (widget.onAccountSelected != null) {
         widget.onAccountSelected!(selected);
       }
-
-      // Update the wallet details cubit with the selected wallet
       walletCubit.selectWallet(selected);
-
       final box = Hive.box(walletBoxName);
       await box.put(selectedWalletKey, selected.address);
     }
@@ -105,8 +147,10 @@ class _AccountDropdownSelectorState extends State<AccountDropdownSelector> {
         ? (isSelected ? GeniusWalletColors.deepBlueTertiary : Colors.white)
         : null;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      hoverColor: Colors.greenAccent.withOpacity(0.08),
+      onTap: () => Navigator.of(context).pop(wallet),
       child: Container(
         decoration: BoxDecoration(
           color: isSelected
@@ -124,10 +168,9 @@ class _AccountDropdownSelectorState extends State<AccountDropdownSelector> {
                 child: Text(
                   wallet.walletName,
                   style: TextStyle(
-                    fontSize: 16,
-                    color: textColor,
-                    fontWeight: FontWeight.w500,
-                  ),
+                      fontSize: 16,
+                      color: textColor,
+                      fontWeight: FontWeight.w500),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -144,10 +187,7 @@ class _AccountDropdownSelectorState extends State<AccountDropdownSelector> {
               Expanded(
                 child: Text(
                   WalletUtils.getAddressForDisplay(wallet.address),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: subColor,
-                  ),
+                  style: TextStyle(fontSize: 12, color: subColor),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -161,15 +201,15 @@ class _AccountDropdownSelectorState extends State<AccountDropdownSelector> {
                 )
               else
                 Text(
-                  '${wallet.balance} ${wallet.currencySymbol}',
+                  '${wallet.balance} ${wallet.balance == 1 ? "minion" : "minions"}',
                   style: TextStyle(
                     color: subColor,
                     fontSize: 12,
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
             ],
           ),
-          onTap: () => Navigator.of(context).pop(wallet),
         ),
       ),
     );
@@ -179,30 +219,25 @@ class _AccountDropdownSelectorState extends State<AccountDropdownSelector> {
     final isWatched = wallet.walletType == WalletType.tracking;
     final borderColor =
         isSelected ? GeniusWalletColors.deepBlueTertiary : Colors.transparent;
-
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: borderColor, // Outer ring / border effect
+        color: borderColor,
       ),
-      padding: const EdgeInsets.all(2), // border width
+      padding: const EdgeInsets.all(2),
       child: Container(
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.greenAccent,
         ),
         child: Center(
-          // ✅ Ensures perfect centering
           child: isWatched
-              ? const Icon(
-                  Icons.remove_red_eye_outlined,
-                  size: 20,
-                  color: GeniusWalletColors.deepBlueTertiary,
-                )
+              ? const Icon(Icons.remove_red_eye_outlined,
+                  size: 20, color: GeniusWalletColors.deepBlueTertiary)
               : SizedBox(
-                  height: 20, // match icon height
+                  height: 20,
                   child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text(
@@ -213,7 +248,7 @@ class _AccountDropdownSelectorState extends State<AccountDropdownSelector> {
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                         color: Colors.black,
-                        height: 1.0, // tighter vertical alignment
+                        height: 1.0,
                       ),
                     ),
                   ),
@@ -232,8 +267,6 @@ class _AccountDropdownSelectorState extends State<AccountDropdownSelector> {
           builder: (context, state) {
             final connection = snapshot.data;
             final wallets = [...state.wallets];
-
-            // TODO: Can we insert this wallet in genius_api?, We would need to be mindful if the connection drops though
             if (connection != null && connection.isConnected) {
               wallets.insert(
                 0,
@@ -247,19 +280,16 @@ class _AccountDropdownSelectorState extends State<AccountDropdownSelector> {
                 ),
               );
             }
-
             if (wallets.isEmpty) {
               return const Center(
                 child: Text("You have no wallets!",
                     style: TextStyle(fontSize: 16, color: Colors.white70)),
               );
             }
-
             selectedWallet ??= wallets.firstWhere(
               (w) => w.address == savedWalletAddress,
               orElse: () => widget.initialSelected ?? wallets.first,
             );
-
             return GestureDetector(
               onTap: () => _showAccountDrawer(wallets),
               child: Container(

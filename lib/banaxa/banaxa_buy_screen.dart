@@ -9,6 +9,7 @@ import 'package:genius_wallet/banxa_order/create_order_state.dart';
 
 import 'package:genius_wallet/banaxa/banaxa_api_services.dart';
 import 'package:genius_wallet/banaxa/banaxa_model.dart';
+import 'package:genius_wallet/components/custom_drop_down.dart';
 
 class BanxaBuyScreen extends StatefulWidget {
   final String? initialFiatCode;
@@ -114,7 +115,7 @@ class _BanxaBuyScreenState extends State<BanxaBuyScreen> {
                         padding: pad,
                         child: ListView(
                           children: [
-                            _Dropdown<FiatCurrency>(
+                            AppDropdown<FiatCurrency>(
                               label: 'Fiat',
                               items: state.fiats,
                               selected: state.selectedFiat,
@@ -132,7 +133,8 @@ class _BanxaBuyScreenState extends State<BanxaBuyScreen> {
                               compact: compact,
                             ),
                             const SizedBox(height: 12),
-                            _Dropdown<CryptoCurrency>(
+
+                            AppDropdown<CryptoCurrency>(
                               label: compact ? 'Crypto' : 'Crypto Currency',
                               items: state.cryptos,
                               selected: state.selectedCrypto,
@@ -150,7 +152,8 @@ class _BanxaBuyScreenState extends State<BanxaBuyScreen> {
                               compact: compact,
                             ),
                             const SizedBox(height: 12),
-                            _Dropdown<PaymentMethod>(
+
+                            AppDropdown<PaymentMethod>(
                               label: compact ? 'Method' : 'Payment Method',
                               items: state.paymentMethods,
                               selected: state.selectedPaymentMethod,
@@ -168,6 +171,7 @@ class _BanxaBuyScreenState extends State<BanxaBuyScreen> {
                               compact: compact,
                             ),
                             const SizedBox(height: 12),
+
                             TextField(
                               controller: _amountController,
                               keyboardType:
@@ -189,6 +193,7 @@ class _BanxaBuyScreenState extends State<BanxaBuyScreen> {
                               ),
                             ),
                             const SizedBox(height: 12),
+
                             if (compact)
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -262,6 +267,7 @@ class _BanxaBuyScreenState extends State<BanxaBuyScreen> {
                                     ),
                                 ],
                               ),
+
                             if (state.hasQuote) ...[
                               const SizedBox(height: 12),
                               Card(
@@ -293,6 +299,8 @@ class _BanxaBuyScreenState extends State<BanxaBuyScreen> {
                               ),
                             ],
                             const SizedBox(height: 12),
+
+                            /// ----- Wallet Address Input -----
                             TextField(
                               controller: _walletController,
                               onChanged: (v) => context
@@ -312,6 +320,7 @@ class _BanxaBuyScreenState extends State<BanxaBuyScreen> {
                               ),
                             ),
                             const SizedBox(height: 18),
+
                             ElevatedButton(
                               onPressed: state.canCreateOrder
                                   ? () async {
@@ -362,56 +371,6 @@ class _BanxaBuyScreenState extends State<BanxaBuyScreen> {
           );
         },
       ),
-    );
-  }
-}
-
-class _Dropdown<T> extends StatelessWidget {
-  final String label;
-  final List<T> items;
-  final T? selected;
-  final void Function(T?)? onChanged;
-  final String Function(T) display;
-  final TextStyle? labelStyle;
-  final bool compact;
-
-  const _Dropdown({
-    required this.label,
-    required this.items,
-    required this.selected,
-    required this.onChanged,
-    required this.display,
-    this.labelStyle,
-    required this.compact,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButtonFormField<T>(
-      isExpanded: true,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: labelStyle,
-        border: const OutlineInputBorder(),
-        isDense: compact,
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: compact ? 10 : 14,
-        ),
-      ),
-      value: selected,
-      items: items.map((item) {
-        final text = display(item);
-        return DropdownMenuItem<T>(
-          value: item,
-          child: Text(
-            text,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-          ),
-        );
-      }).toList(),
-      onChanged: onChanged,
     );
   }
 }
