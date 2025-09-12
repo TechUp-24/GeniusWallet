@@ -315,21 +315,37 @@ class _ReownConnectButtonState extends State<ReownConnectButton> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          GeniusWalletColors.lightGreenPrimary, // green fill
-                      foregroundColor: Colors.white, // text/icon color
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      elevation: 0,
+                      padding: EdgeInsets.zero,
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(12), // rounded edges
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      elevation: 2, // subtle shadow
                     ),
-                    child: const Text(
-                      "Connect",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [
+                            GeniusWalletColors.lightGreenPrimary,
+                            GeniusWalletColors.btnGradientGreen,
+                          ],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Container(
+                        height: 32, // Match your button height
+                        alignment: Alignment.center,
+                        child: const Text(
+                          "Connect",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black, // Always black on gradient
+                          ),
+                        ),
                       ),
                     ),
                   ),

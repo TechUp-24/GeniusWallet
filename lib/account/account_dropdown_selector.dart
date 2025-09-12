@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:genius_api/genius_api.dart';
 import 'package:genius_api/models/sgnus_connection.dart';
@@ -152,64 +153,104 @@ class _AccountDropdownSelectorState extends State<AccountDropdownSelector> {
       hoverColor: Colors.greenAccent.withOpacity(0.08),
       onTap: () => Navigator.of(context).pop(wallet),
       child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
           color: isSelected
               ? Colors.greenAccent
               : GeniusWalletColors.deepBlueCardColor,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: ListTile(
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-          leading: _buildAccountAvatar(wallet, isSelected, 36),
-          title: Row(
-            children: [
-              Flexible(
-                child: Text(
-                  wallet.walletName,
-                  style: TextStyle(
-                      fontSize: 16,
-                      color: textColor,
-                      fontWeight: FontWeight.w500),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              if (isWatched)
-                Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: Icon(Icons.remove_red_eye_outlined,
-                      size: 16, color: trailingIconColor),
-                ),
-            ],
-          ),
-          subtitle: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  WalletUtils.getAddressForDisplay(wallet.address),
-                  style: TextStyle(fontSize: 12, color: subColor),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 12),
-              if (wallet.walletType == WalletType.sgnus)
-                GeniusBalanceDisplay(
-                  useMinions: true,
-                  fontSize: 12,
-                  isShowSuffix: true,
-                  fontColor: subColor,
-                )
-              else
-                Text(
-                  '${wallet.balance} ${wallet.balance == 1 ? "minion" : "minions"}',
-                  style: TextStyle(
-                    color: subColor,
-                    fontSize: 12,
-                    fontStyle: FontStyle.italic,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListTile(
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+              leading: _buildAccountAvatar(wallet, isSelected, 36),
+              title: Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      wallet.walletName,
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: textColor,
+                          fontWeight: FontWeight.w500),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
+                  if (isWatched)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Icon(Icons.remove_red_eye_outlined,
+                          size: 16, color: trailingIconColor),
+                    ),
+                ],
+              ),
+              subtitle: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      WalletUtils.getAddressForDisplay(wallet.address),
+                      style: TextStyle(fontSize: 12, color: subColor),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  if (wallet.walletType == WalletType.sgnus)
+                    GeniusBalanceDisplay(
+                      useMinions: true,
+                      fontSize: 12,
+                      isShowSuffix: true,
+                      fontColor: subColor,
+                    )
+                  else
+                    Text(
+                      '${wallet.balance} ${wallet.balance == 1 ? "minion" : "minions"}',
+                      style: TextStyle(
+                        color: subColor,
+                        fontSize: 12,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            if ((wallet.address ?? '').isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(left: 18, right: 18, bottom: 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SelectableText(
+                        wallet.address,
+                        style: const TextStyle(
+                          color: GeniusWalletColors.gray500,
+                          fontSize: 13,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.copy,
+                          color: GeniusWalletColors.white, size: 20),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: wallet.address));
+                        HapticFeedback.lightImpact();
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Address copied to clipboard'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                      tooltip: "Copy address",
+                    ),
+                  ],
                 ),
-            ],
-          ),
+              ),
+          ],
         ),
       ),
     );
