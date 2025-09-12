@@ -213,6 +213,13 @@ class _OrdersPageState extends State<OrdersPage> {
                 _buildActionButton(context, order.toJson()),
                 const SizedBox(width: 8),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: const Size(120, 44),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12),
+                    textStyle: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w500),
+                  ),
                   onPressed: () {
                     context.push(
                       '/orderDetails',
@@ -249,12 +256,12 @@ class _OrdersPageState extends State<OrdersPage> {
               ),
         title: const Text("My Orders"),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.app_registration_rounded),
-            onPressed: () {
-              context.push('/kyc');
-            },
-          ),
+          // IconButton(
+          //   icon: const Icon(Icons.app_registration_rounded),
+          //   onPressed: () {
+          //     context.push('/kyc');
+          //   },
+          // ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
@@ -380,7 +387,7 @@ class _OrdersPageState extends State<OrdersPage> {
               Expanded(child: LayoutBuilder(builder: (context, constraints) {
                 final isWide = constraints.maxWidth > 900;
                 final crossAxisCount = isWide ? 2 : 1;
-                final spacing = 16.0;
+                const spacing = 16.0;
                 final totalSpacing = spacing * (crossAxisCount - 1);
                 final cardWidth =
                     (constraints.maxWidth - totalSpacing) / crossAxisCount;

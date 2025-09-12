@@ -197,7 +197,10 @@ class _ReownConnectButtonState extends State<ReownConnectButton> {
                 ),
               ),
               const SizedBox(width: 12),
-              const Text("Wallet Connect"),
+              const Text(
+                "Wallet Connect",
+                style: TextStyle(fontSize: 18),
+              ),
             ]),
             content: SizedBox(
               width: 300,
