@@ -44,15 +44,18 @@ void main() async {
 
   if ((await secureStorage.getWallets().first).isNotEmpty) {
     await geniusApi.initSDK();
+    geniusApi.startNetworkMonitoring();
   } else {
     byPassSGNUSConnecton(geniusApi);
     byPassWalletCreation(secureStorage);
     addFakeSGNUSTransactions(geniusApi.getSGNUSTransactionsController());
+    geniusApi.startNetworkMonitoring();
   }
 
   /// Initialize window_manager only on **desktop**
   if (!kIsWeb && (Platform.isMacOS || Platform.isWindows || Platform.isLinux)) {
     await windowManager.ensureInitialized();
+    await windowManager.setPreventClose(true);
     windowManager.addListener(MyWindowListener(geniusApi));
   }
 
@@ -87,11 +90,40 @@ class MyWindowListener extends WindowListener {
 
   @override
   void onWindowClose() async {
-    // Trigger cleanup when the window is closed
-    geniusApi.shutdownSDK();
-    debugPrint("Window closed. GeniusApi shutdown.");
+    const double buttonWidth = 100;
 
-    exit(0);
+    bool? shouldExit = await showDialog(
+      context: navigatorKey.currentContext!,
+      builder: (context) => AlertDialog(
+        title: const Text('Exit App?'),
+        content: const Text('Are you sure you want to exit?'),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          SizedBox(
+            width: buttonWidth,
+            child: TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+          ),
+          SizedBox(
+            width: buttonWidth,
+            child: TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Exit'),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldExit == true) {
+      geniusApi.shutdownSDK();
+      debugPrint("Window closed. GeniusApi shutdown.");
+      //   await windowManager.destroy();
+      //  await Future.delayed(const Duration(milliseconds: 200));
+      exit(0);
+    }
   }
 }
 
@@ -131,7 +163,7 @@ class _AppLifecycleHandlerState extends State<AppLifecycleHandler>
     if (state == AppLifecycleState.detached) {
       debugPrint(
           "---------------------------------------------------------------------------------------------------");
-      widget.geniusApi.shutdownSDK(); // Handle app exit
+      widget.geniusApi.shutdownSDK();
     }
   }
 
