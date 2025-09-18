@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:genius_wallet/theme/genius_wallet_colors.g.dart';
+import 'package:genius_wallet/theme/genius_wallet_colors.dart';
 
 class PulsingSkeleton extends StatefulWidget {
   final double height;

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:genius_wallet/banaxa/banaxa_model.dart';
 import 'package:genius_wallet/banaxa/banxa_components/order_action_button.dart';
 import 'package:genius_wallet/banaxa/banxa_components/order_in_row.dart';
-import 'package:genius_wallet/theme/genius_wallet_colors.g.dart';
+import 'package:genius_wallet/theme/genius_wallet_colors.dart';
 import 'package:intl/intl.dart';
 
 class OrderCard extends StatelessWidget {

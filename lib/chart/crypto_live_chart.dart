@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:genius_wallet/components/pulsing_skeleton.dart';
 import 'package:genius_wallet/services/coin_gecko/coin_gecko_api.dart';
-import 'package:genius_wallet/theme/genius_wallet_colors.g.dart';
 import 'package:intl/intl.dart';
 
 class CryptoLiveChart extends StatefulWidget {

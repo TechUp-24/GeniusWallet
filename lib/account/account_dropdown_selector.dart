@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:genius_api/ffi/trust_wallet_api_ffi.dart';
 import 'package:genius_api/genius_api.dart';
 import 'package:genius_api/models/sgnus_connection.dart';
 import 'package:genius_api/types/wallet_type.dart';
@@ -9,7 +10,7 @@ import 'package:genius_wallet/components/scaffold/scaffold_helper.dart';
 import 'package:genius_wallet/theme/genius_wallet_gradient.dart';
 import 'package:genius_wallet/utils/wallet_utils.dart';
 import 'package:genius_wallet/hive/constants/cache.dart';
-import 'package:genius_wallet/theme/genius_wallet_colors.g.dart';
+import 'package:genius_wallet/theme/genius_wallet_colors.dart';
 import 'package:genius_wallet/wallets/cubit/wallet_details_cubit.dart';
 import 'package:genius_wallet/wallets/view/genius_balance_display.dart';
 import 'package:genius_wallet/components/bottom_drawer/responsive_drawer.dart';
@@ -307,7 +308,7 @@ class _AccountDropdownSelectorState extends State<AccountDropdownSelector> {
                   walletType: WalletType.sgnus,
                   address: connection.sgnusAddress,
                   currencySymbol: 'minions',
-                  coinType: -1,
+                  coinType: TWCoinType.TWCoinTypeEthereum,
                   balance: 0,
                 ),
               );

@@ -12,7 +12,7 @@ import 'package:genius_wallet/components/qr/crypto_address_qr.dart';
 import 'package:genius_wallet/components/scaffold/scaffold_helper.dart';
 import 'package:genius_wallet/components/sgnus/sgnus_connection_widget.dart';
 import 'package:genius_wallet/wallets/cubit/wallet_details_cubit.dart';
-import 'package:genius_wallet/theme/genius_wallet_colors.g.dart';
+import 'package:genius_wallet/theme/genius_wallet_colors.dart';
 import 'package:genius_wallet/theme/genius_wallet_consts.dart';
 import 'package:genius_wallet/components/action_button.dart';
 import 'package:genius_wallet/components/bottom_drawer/responsive_drawer.dart';
