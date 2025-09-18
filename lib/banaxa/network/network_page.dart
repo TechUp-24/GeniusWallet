@@ -26,7 +26,7 @@ class _NetworkStatusPageState extends State<NetworkStatusPage> {
     super.initState();
 
     Connectivity().checkConnectivity().then((list) {
-      if (!mounted) return; // FIXED: check mounted!
+      if (!mounted) return; 
       setState(() {
         lastKnownConnectivity =
             list.isNotEmpty ? list.first : ConnectivityResult.none;

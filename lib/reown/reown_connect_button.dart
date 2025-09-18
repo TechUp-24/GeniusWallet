@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:genius_api/genius_api.dart';
+import 'package:genius_wallet/components/scaffold/scaffold_helper.dart';
 import 'package:genius_wallet/dashboard/transactions/cubit/transactions_cubit.dart';
 import 'package:genius_wallet/navigation/router.dart';
 import 'package:genius_wallet/reown/approve_dapp_connection_drawer.dart';
 import 'package:genius_wallet/reown/handle_dapp_requests.dart';
 import 'package:genius_wallet/reown/reown_walletkit_instance.dart';
 import 'package:genius_wallet/theme/genius_wallet_colors.g.dart';
+import 'package:genius_wallet/theme/genius_wallet_gradient.dart';
 import 'package:genius_wallet/wallets/cubit/wallet_details_cubit.dart';
 import 'package:genius_wallet/components/bottom_drawer/responsive_drawer.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -112,11 +114,10 @@ class _ReownConnectButtonState extends State<ReownConnectButton> {
 
         if (approved == null || !approved) {
           debugPrint("❌ Connection request rejected by user");
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("DApp connection was rejected."),
-              backgroundColor: Colors.redAccent,
-            ),
+          showAppSnackBar(
+            context,
+            "DApp connection was rejected.",
+            backgroundColor: Colors.red,
           );
 
           await walletKit.rejectSession(
@@ -318,6 +319,7 @@ class _ReownConnectButtonState extends State<ReownConnectButton> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(48),
                       backgroundColor: Colors.transparent,
                       shadowColor: Colors.transparent,
                       elevation: 0,
@@ -328,25 +330,18 @@ class _ReownConnectButtonState extends State<ReownConnectButton> {
                     ),
                     child: Ink(
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            GeniusWalletColors.lightGreenPrimary,
-                            GeniusWalletColors.btnGradientGreen,
-                          ],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
+                        gradient: GeniusWalletGradient.greenBlueGreenGradient,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Container(
-                        height: 32, // Match your button height
+                        height: 48,
                         alignment: Alignment.center,
                         child: const Text(
                           "Connect",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black, // Always black on gradient
+                            color: Colors.black,
                           ),
                         ),
                       ),
@@ -407,12 +402,13 @@ class _ReownConnectButtonState extends State<ReownConnectButton> {
           });
           debugPrint('⏱ Timeout hit – no session received.');
           if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Wallet connection failed. Please try again."),
-                backgroundColor: Colors.redAccent,
-              ),
+            showAppSnackBar(
+              context,
+              "Wallet connection failed. Please try again.",
+              backgroundColor: Colors.red,
             );
+
+          
           }
         }
       });

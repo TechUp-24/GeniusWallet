@@ -8,6 +8,7 @@ import 'package:genius_api/models/coin.dart';
 import 'package:genius_api/models/network.dart';
 import 'package:genius_api/web3/api_response.dart';
 import 'package:genius_wallet/assets/read_asset.dart';
+import 'package:genius_wallet/components/scaffold/scaffold_helper.dart';
 import 'package:genius_wallet/utils/breakpoints.dart';
 import 'package:genius_wallet/wallets/cubit/wallet_details_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -459,18 +460,9 @@ class BridgeScreenState extends State<BridgeScreen> {
                                                                           .data ??
                                                                       ""),
                                                             );
-                                                            ScaffoldMessenger
-                                                                    .of(context)
-                                                                .showSnackBar(
-                                                              const SnackBar(
-                                                                content: Text(
-                                                                    "Transaction Hash Copied!"),
-                                                                duration:
-                                                                    Duration(
-                                                                        seconds:
-                                                                            2),
-                                                              ),
-                                                            );
+                                                            showAppSnackBar(
+                                                                context,
+                                                                "Transaction Hash Copied!");
                                                           },
                                                         ),
                                                       ],

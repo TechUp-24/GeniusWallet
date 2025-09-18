@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:genius_wallet/components/bottom_drawer/responsive_drawer.dart';
 import 'package:genius_wallet/theme/genius_wallet_colors.g.dart';
+import 'package:genius_wallet/theme/genius_wallet_gradient.dart';
 
 class SwapSettingsDrawer {
   static void show(
@@ -11,7 +12,6 @@ class SwapSettingsDrawer {
     final TextEditingController slippageController =
         TextEditingController(text: initialSlippage.toString());
     final formKey = GlobalKey<FormState>();
-   
 
     ResponsiveDrawer.show<void>(
       context: context,
@@ -96,20 +96,30 @@ class SwapSettingsDrawer {
               }
             },
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              backgroundColor: Colors.greenAccent,
-              foregroundColor: GeniusWalletColors.deepBlueTertiary,
+              padding: EdgeInsets.zero, 
+              backgroundColor: Colors.transparent,
+              shadowColor: Colors.transparent,
+              elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
-              elevation: 0,
             ),
-            child: const Text(
-              "Apply",
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
+            child: Ink(
+              decoration: BoxDecoration(
+                gradient: GeniusWalletGradient.greenBlueGreenGradient,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Container(
+                height: 48, 
+                alignment: Alignment.center,
+                child: const Text(
+                  "Apply",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                  ),
+                ),
               ),
             ),
           ),

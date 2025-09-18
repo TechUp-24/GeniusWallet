@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:genius_wallet/banxa_order/polling_order_cubit.dart';
 import 'package:genius_wallet/banxa_order/polling_order_state.dart';
+import 'package:genius_wallet/components/loading/loading.dart';
+import 'package:genius_wallet/components/scaffold/scaffold_helper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter/services.dart';
@@ -47,9 +49,7 @@ class CheckoutQrPage extends StatelessWidget {
             !cubit.hasNavigated) {
           cubit.hasNavigated = true;
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Order ${state.order!.status}')),
-            );
+            showAppSnackBar(context, 'Order ${state.order!.status}');
           });
         }
 
@@ -92,9 +92,7 @@ class CheckoutQrPage extends StatelessWidget {
                           await Clipboard.setData(
                               ClipboardData(text: checkoutUrl));
                           if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Link copied')),
-                            );
+                            showAppSnackBar(context, 'Link copied');
                           }
                         },
                         icon: const Icon(Icons.content_copy),
@@ -108,7 +106,7 @@ class CheckoutQrPage extends StatelessWidget {
                   child: Column(
                     children: [
                       if (state.status == PollingStatus.loading)
-                        const CircularProgressIndicator(),
+                        const Loading(),
                       const SizedBox(height: 12),
                       Text(
                         state.message.isNotEmpty

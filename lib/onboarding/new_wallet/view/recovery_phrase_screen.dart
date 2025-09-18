@@ -1,6 +1,7 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:genius_wallet/components/scaffold/scaffold_helper.dart';
 import 'package:genius_wallet/utils/breakpoints.dart';
 import 'package:genius_wallet/components/app_screen_view.dart';
 import 'package:genius_wallet/components/app_screen_with_header_desktop.dart';
@@ -221,11 +222,8 @@ class _WordsGridWithCopyAndToggleState
                   TextButton.icon(
                     onPressed: () async {
                       await FlutterClipboard.copy(words.join(' '));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content:
-                                Text("Recovery phrase copied to clipboard!")),
-                      );
+                      showAppSnackBar(
+                          context, "Recovery phrase copied to clipboard!");
                     },
                     icon: const Icon(Icons.copy),
                     label: const Text("Copy to clipboard"),
@@ -323,23 +321,15 @@ class _WordsAndCopyState extends State<_WordsAndCopy> {
         TextButton.icon(
           onPressed: () async {
             await FlutterClipboard.copy(
-                context
-                    .read<NewWalletBloc>()
-                    .state
-                    .recoveryWords
-                    .join(' '));
+                context.read<NewWalletBloc>().state.recoveryWords.join(' '));
             if (!mounted) {
               return;
             }
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Recovery phrase copied to clipboard!'),
-              ),
-            );
+            showAppSnackBar(context, 'Recovery phrase copied to clipboard!');
           },
           style: OutlinedButton.styleFrom(
             shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
             side: const BorderSide(
                 width: 1.0, color: GeniusWalletColors.btnCopyBorder),
