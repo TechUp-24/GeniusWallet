@@ -1,0 +1,2 @@
+macos/native/build/GeniusWallet.framework/Versions/A/GeniusWallet filter=lfs diff=lfs merge=lfs -text
+macos/native/build/libGeniusWallet.dylib filter=lfs diff=lfs merge=lfs -text
